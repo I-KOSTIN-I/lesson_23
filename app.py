@@ -11,7 +11,7 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 DATA_DIR = os.path.join(BASE_DIR, "data")
 
 
-@app.route("/perform_query/")
+@app.route("/perform_query/", methods=['POST'])
 def perform_query():
     # получить параметры query и file_name из request.args, при ошибке вернуть ошибку 400
     try:
@@ -21,12 +21,12 @@ def perform_query():
         value_2 = request.args['value2']
         file_name = request.args['file_name']
     except:
-        return BadRequest
+        return BadRequest(description=f'error in request parameters')
 
     # проверить, что файла file_name существует в папке DATA_DIR, при ошибке вернуть ошибку 400
     path_file = os.path.join(DATA_DIR, file_name)
     if not os.path.exists(path_file):
-        return BadRequest
+        return BadRequest(description=f'{file_name} was not found')
 
     with open(path_file) as file:
         res = build_query(file, cmd_1, value_1)
